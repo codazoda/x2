@@ -22,6 +22,7 @@ func main() {
 	// Setup functions to handle other URI's
 	http.HandleFunc("/root", rootHandler)
 	http.HandleFunc("/upload", uploadHandler)
+	http.HandleFunc("/album", albumHandler)
 	http.HandleFunc("/image/", imageHandler)
 	http.HandleFunc("/create", createHandler)
 	// Start a server
@@ -94,8 +95,25 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 	row.Scan(&image)
 	// TODO: Decrypt the file
 	// Show the image
+	w.Header().Add("content-type", "image/jpeg")
+	imageBinary, _ := base64.StdEncoding.DecodeString(image)
+	w.Write(imageBinary)
+}
+
+func albumHandler(w http.ResponseWriter, r *http.Request) {
+	// Setup variables
+	var id int
+	// Query for all the images in the album
+	database, _ :=
+		sql.Open("sqlite3", "./images.db")
+	rows, _ := database.Query("SELECT id FROM images")
+	// Loop through the images showing them
 	w.Header().Add("content-type", "text/html")
-	io.WriteString(w, "<img src='data:image/jpeg;base64,"+image+"' style='width: 100%'>")
+	for rows.Next() {
+		rows.Scan(&id)
+		io.WriteString(w, "<img src='./image/"+strconv.Itoa(id)+"' style='width: calc(100% - 40px); padding: 20px;' loading='lazy'>\n")
+	}
+	// TODO: Decrypt the images
 }
 
 func createHandler(w http.ResponseWriter, r *http.Request) {

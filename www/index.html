@@ -1,5 +1,21 @@
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+    p {
+        text-align: center;
+    }
+    input {
+        display: block;
+        margin: 20px auto 20px auto;
+    }
+</style>
+
 <form method="post" enctype="multipart/form-data">
     <input hx-post="/upload" hx-encoding="multipart/form-data" type="file" name="image" accept="image/*" capture="camera">
 </form>
+
+<p>
+    <a href="/album">View Album</a>
+</p>
 
 <script src="vendor/htmx.min.js"></script>
