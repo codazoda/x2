@@ -2,6 +2,8 @@
 
 An encrypted photo album for home network use.
 
+I'm no security expert and this software is experimental. I suggest you keep the server on an internal home network that is not accessible from the internet. The point of this album is to keep your photos out of your phone's own storage solution and to encrypt the photos when they are at rest.
+
 The initial version of this tool is not yet encrypted. I'll add that as soon as I have the basics working for me.
 
 I wanted a mobile photo album that was separate from my phone's own photo library and that I could control completely. I wanted it to be portable to any mobile phone or tablet in my household so I created a web based app that could be run on any machine on the local network.
