@@ -1,6 +1,6 @@
 # X2
 
-An (eventually encrypted) photo album for home network use.
+An (eventually encrypted) private photo album for home network use.
 
 ## Getting Started
 
