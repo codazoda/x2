@@ -15,11 +15,11 @@ Now Point your browser to `http://localhost:8002` to start capturing images.
 
 ## More Information
 
+I wanted a mobile photo album that was separate from my phone's own photo library and that I could control myself. I wanted it to be portable to any mobile phone or tablet in my household so I created a web based app that could be run on any machine on the local network.
+
 I'm no security expert and this software is experimental. I suggest you keep the server on an internal home network that is not accessible from the internet. The point of this tool is to keep your photos out of your phone's own photo album and to encrypt the photos when they're at rest.
 
 The initial version of this tool is not yet encrypted. I'll add that as soon as I've tested the basics.
-
-I wanted a mobile photo album that was separate from my phone's own photo library and that I could control myself. I wanted it to be portable to any mobile phone or tablet in my household so I created a web based app that could be run on any machine on the local network.
 
 The server is a single binary coded in Go.
 
