@@ -12,7 +12,7 @@ The server is a single binary coded in Go.
 
 The images are stored as base64 encoded records inside of an sqlite database.
 
-The font-end is regular html with a bit of htmx for the javascript bits.
+The font-end is regular html with a bit of htmx for the javascript bits. I have spent no time making this tool pretty.
 
 To compile the program simply type `go build`.
 
@@ -22,7 +22,7 @@ Before you can upload files you need to create the blank image DB. To do that, s
 
 Now that you have an image DB, you can upload images on the apps main page. Point your browser to `http://localhost:8002` to get started capturing images.
 
-You can view the entire albim by pointing your browser to `http://localhost:8002/album`.
+You can view the entire album by pointing your browser to `http://localhost:8002/album`.
 
 You can view images by pointing your browser to `http://localhost:8002/image/{id}` where `{id}` is replaced by the image id that you uploaded.
 
@@ -32,7 +32,7 @@ This is called X2 because it's my second unnamed experiment. Read more about why
 
 ## Todo
 
-- Allow a key to be passed somehow
+- Allow a key to be passed via http basic auth
 - Encrypt the image before storage
 - Decrypt the image before display
-- Redirect after image upload
+- Maybe use an alternate "browse" button
