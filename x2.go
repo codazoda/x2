@@ -12,7 +12,16 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
+type application struct {
+	database struct {
+		file string
+	}
+}
+
 func main() {
+	app := new(application)
+	app.database.file = "./images.db"
+
 	// Set some port variables
 	const port = "8002"
 	const address = ":" + port
@@ -20,11 +29,11 @@ func main() {
 	fileServer := http.FileServer(http.Dir("./www"))
 	http.Handle("/", fileServer)
 	// Setup functions to handle other URI's
-	http.HandleFunc("/root", rootHandler)
-	http.HandleFunc("/upload", uploadHandler)
-	http.HandleFunc("/album", albumHandler)
-	http.HandleFunc("/image/", imageHandler)
-	http.HandleFunc("/create", createHandler)
+	http.HandleFunc("/root", app.rootHandler)
+	http.HandleFunc("/upload", app.uploadHandler)
+	http.HandleFunc("/album", app.albumHandler)
+	http.HandleFunc("/image/", app.imageHandler)
+	http.HandleFunc("/create", app.createHandler)
 	// Start a server
 	fmt.Printf("Server started on port %s\n", port)
 	if err := http.ListenAndServe(address, nil); err != nil {
@@ -32,12 +41,12 @@ func main() {
 	}
 }
 
-func rootHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) rootHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Add("content-type", "text/html")
 	io.WriteString(w, "Hello World.\n")
 }
 
-func uploadHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) uploadHandler(w http.ResponseWriter, r *http.Request) {
 	// Reject if the method wasn't post
 	if r.Method != "POST" {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -74,7 +83,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO: Encrypt the file
 	// Write the file to the DB
 	database, _ :=
-		sql.Open("sqlite3", "./images.db")
+		sql.Open("sqlite3", app.database.file)
 	statement, _ :=
 		database.Prepare("INSERT INTO images (image) VALUES (?)")
 	statement.Exec(base64.StdEncoding.EncodeToString(fileBuffer[:readTotal]))
@@ -83,12 +92,12 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	io.WriteString(w, "File saved")
 }
 
-func imageHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) imageHandler(w http.ResponseWriter, r *http.Request) {
 	// Grab the vars from the request (including the URI)
 	idString := r.URL.Path[len("/image/"):]
 	// Query for the image from the file
 	database, _ :=
-		sql.Open("sqlite3", "./images.db")
+		sql.Open("sqlite3", app.database.file)
 	id, _ := strconv.Atoi(idString)
 	row := database.QueryRow("SELECT image FROM images WHERE id = ?", id)
 	var image string
@@ -100,13 +109,13 @@ func imageHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(imageBinary)
 }
 
-func albumHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) albumHandler(w http.ResponseWriter, r *http.Request) {
 	// Setup variables
 	var id int
 	// Query for all the images in the album
 	database, _ :=
-		sql.Open("sqlite3", "./images.db")
-	rows, _ := database.Query("SELECT id FROM images")
+		sql.Open("sqlite3", app.database.file)
+	rows, _ := database.Query("SELECT id FROM images ORDER BY id DESC")
 	// Loop through the images showing them
 	w.Header().Add("content-type", "text/html")
 	for rows.Next() {
@@ -116,10 +125,10 @@ func albumHandler(w http.ResponseWriter, r *http.Request) {
 	// TODO: Decrypt the images
 }
 
-func createHandler(w http.ResponseWriter, r *http.Request) {
+func (app *application) createHandler(w http.ResponseWriter, r *http.Request) {
 	// Create a database an add a record
 	database, _ :=
-		sql.Open("sqlite3", "./images.db")
+		sql.Open("sqlite3", app.database.file)
 	statement, _ :=
 		database.Prepare("CREATE TABLE IF NOT EXISTS images (id INTEGER PRIMARY KEY, image BLOB)")
 	statement.Exec()
