@@ -3,10 +3,12 @@ package main
 import (
 	"database/sql"
 	"encoding/base64"
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strconv"
 
 	_ "github.com/mattn/go-sqlite3"
@@ -22,6 +24,8 @@ func main() {
 	app := new(application)
 	app.database.file = "./images.db"
 
+	// Initialize the application
+	app.init()
 	// Set some port variables
 	const port = "8002"
 	const address = ":" + port
@@ -33,11 +37,23 @@ func main() {
 	http.HandleFunc("/upload", app.uploadHandler)
 	http.HandleFunc("/album", app.albumHandler)
 	http.HandleFunc("/image/", app.imageHandler)
-	http.HandleFunc("/create", app.createHandler)
 	// Start a server
 	fmt.Printf("Server started on port %s\n", port)
 	if err := http.ListenAndServe(address, nil); err != nil {
 		log.Fatal(err)
+	}
+}
+
+func (app *application) init() {
+	// Check if the database file exists and create it if it doesn't
+	_, err := os.Open(app.database.file)
+	if errors.Is(err, os.ErrNotExist) {
+		// Create a database an add a record
+		database, _ :=
+			sql.Open("sqlite3", app.database.file)
+		statement, _ :=
+			database.Prepare("CREATE TABLE IF NOT EXISTS images (id INTEGER PRIMARY KEY, image BLOB)")
+		statement.Exec()
 	}
 }
 
@@ -123,13 +139,4 @@ func (app *application) albumHandler(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, "<img src='./image/"+strconv.Itoa(id)+"' style='width: calc(100% - 40px); padding: 20px;' loading='lazy'>\n")
 	}
 	// TODO: Decrypt the images
-}
-
-func (app *application) createHandler(w http.ResponseWriter, r *http.Request) {
-	// Create a database an add a record
-	database, _ :=
-		sql.Open("sqlite3", app.database.file)
-	statement, _ :=
-		database.Prepare("CREATE TABLE IF NOT EXISTS images (id INTEGER PRIMARY KEY, image BLOB)")
-	statement.Exec()
 }
