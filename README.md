@@ -4,9 +4,12 @@ An (eventually encrypted) photo album for home network use.
 
 ## Getting Started
 
-The server should run on any Mac, Linux, or Windows machine. To run it execute `./x2` after compiling. Run just `x2` if you're on Windows.
+The server should run on any Mac, Linux, or Windows machine but I've only tested it on Mac. To build and run it, clone the repo and then run the following.
 
-To compile the program simply type `go build`.
+```
+go build
+./x2
+```
 
 Now Point your browser to `http://localhost:8002` to start capturing images.
 
@@ -32,8 +35,8 @@ Although this works fine on desktop it was primarily designed to work on mobile 
 
 ## Todo
 
+- Use HTTPS (TLS) to serve the app
 - Allow a key to be passed via http basic auth
 - Encrypt the image before storage
 - Decrypt the image before display
-- Redirect to create if the image db doesn't exist
 - Maybe use an alternate "browse" button
